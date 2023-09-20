@@ -6,7 +6,15 @@ export default class JwtService {
       expiresIn: expiry,
     });
   }
-  static verify(token: string) {
-    return jwt.verify(token, process.env.JWT_SECRET as string);
+  static verify(token: string): JwtPayload | null {
+    let payload: JwtPayload | null = {};
+    jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
+      if (err) {
+        payload = null;
+        return;
+      }
+      payload = decoded as JwtPayload;
+    });
+    return payload;
   }
 }
