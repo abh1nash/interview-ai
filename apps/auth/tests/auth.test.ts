@@ -14,6 +14,14 @@ describe("Auth", () => {
     await factory.close();
   });
 
+  test("should handle empty email and password fields", async () => {
+    const response = await factory.app.post("/auth/login").send({
+      email: "",
+      password: "",
+    });
+    expect(response.status).toBe(401);
+  });
+
   test("should allow login with valid credentials", async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce({
       name: faker.person.fullName(),
@@ -51,6 +59,23 @@ describe("Auth", () => {
     expect(response.status).toBe(401);
   });
 
+  test("should not allow login with invalid password hash", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce({
+      name: faker.person.fullName(),
+      email: "existing@example.com",
+      passwordHash: "invalidHash", // Invalid hash format
+      createdAt: faker.date.recent(),
+      updatedAt: faker.date.recent(),
+      role: "candidate",
+      id: faker.number.bigInt(),
+    });
+    const response = await factory.app.post("/auth/login").send({
+      email: "existing@example.com",
+      password: "password",
+    });
+    expect(response.status).toBe(401);
+  });
+
   test("should not allow login with invalid email", async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce(null);
     const response = await factory.app.post("/auth/login").send({
@@ -75,6 +100,19 @@ describe("Auth", () => {
     const employerResponse = await factory.app
       .get("/auth/verify/employer")
       .set("Authorization", `Bearer ${token}`);
-    expect(employerResponse.status).toBe(401);
+    expect(employerResponse.status).toBe(403);
+  });
+
+  test("should return 401 when Authorization header is missing", async () => {
+    const response = await factory.app.get("/auth/verify/candidate");
+    expect(response.status).toBe(401);
+  });
+
+  test("should return 401 for an invalid token", async () => {
+    const invalidToken = "invalid_token_here";
+    const response = await factory.app
+      .get("/auth/verify/candidate")
+      .set("Authorization", `Bearer ${invalidToken}`);
+    expect(response.status).toBe(401);
   });
 });
