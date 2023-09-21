@@ -1,7 +1,7 @@
 import { Response, Request, NextFunction } from "express";
 import prisma from "prisma/client";
 import argon2 from "argon2";
-import { LoginResponseDTO } from "./auth.dto";
+import { LoginErrorResponseDTO, LoginResponseDTO } from "./auth.dto";
 import JwtService from "src/services/jwt.service";
 
 export default class AuthController {
@@ -10,18 +10,24 @@ export default class AuthController {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      response.status(401).json({ message: "Invalid credentials" });
+      response
+        .status(401)
+        .json(new LoginErrorResponseDTO("Invalid credentials."));
       return;
     }
     try {
       const isValid = await argon2.verify(user.passwordHash, password);
 
       if (!isValid) {
-        response.status(401).json({ message: "Invalid credentials" });
+        response
+          .status(401)
+          .json(new LoginErrorResponseDTO("Invalid credentials."));
         return;
       }
     } catch (error) {
-      response.status(401).json({ message: "Invalid credentials" });
+      response
+        .status(401)
+        .json(new LoginErrorResponseDTO("Invalid credentials."));
       return;
     }
 

@@ -5,3 +5,7 @@ export class LoginDTO {
 export class LoginResponseDTO {
   constructor(public token: string) {}
 }
+
+export class LoginErrorResponseDTO {
+  constructor(public message: string) {}
+}
