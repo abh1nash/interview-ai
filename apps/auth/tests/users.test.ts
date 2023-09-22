@@ -1,6 +1,7 @@
 import { prismaMock } from "prisma/singleton";
 import { TestFactory } from "./factory/TestFactory";
 import { faker } from "@faker-js/faker";
+import JwtService from "src/services/jwt.service";
 
 describe("Users", () => {
   const factory: TestFactory = new TestFactory();
@@ -28,9 +29,15 @@ describe("Users", () => {
       role: "candidate",
       id: faker.number.bigInt(),
     });
+
+    const originalGenerate = JwtService.generate;
+    JwtService.generate = jest.fn().mockResolvedValue("fake-token");
+
     const response = await factory.app.post("/user/create").send(user);
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("token");
+
+    JwtService.generate = originalGenerate;
   });
 
   it("should not create a new user if email is already in use", async () => {

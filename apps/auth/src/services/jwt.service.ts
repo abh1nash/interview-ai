@@ -1,20 +1,25 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
-
+import { ofetch } from "ofetch";
 export default class JwtService {
-  static generate(payload: JwtPayload, expiry: string | number = "2h") {
-    return jwt.sign(payload, process.env.JWT_SECRET as string, {
-      expiresIn: expiry,
-    });
-  }
-  static verify(token: string): JwtPayload | null {
-    let payload: JwtPayload | null = {};
-    jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
-      if (err) {
-        payload = null;
-        return;
+  static async generate(
+    payload: { sub: string; role: string },
+    expiry: string | number = "2h"
+  ) {
+    return await ofetch(
+      (process.env.TOKEN_SERVICE_URL as string) + "/token/generate",
+      {
+        method: "post",
+        body: payload,
+        query: { expiry },
       }
-      payload = decoded as JwtPayload;
-    });
-    return payload;
+    );
+  }
+  static async verify(token: string) {
+    return await ofetch(
+      (process.env.TOKEN_SERVICE_URL as string) + "/token/decode",
+      {
+        method: "get",
+        query: { token },
+      }
+    );
   }
 }

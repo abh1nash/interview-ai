@@ -33,12 +33,18 @@ describe("Auth", () => {
       role: "candidate",
       id: faker.number.bigInt(),
     });
+    // Mock JwtService.generate to return a token
+    const originalGenerate = JwtService.generate;
+    JwtService.generate = jest.fn().mockResolvedValue("fake-token");
+
     const response = await factory.app.post("/auth/login").send({
       email: "fake@email.com",
       password: "password",
     });
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("token");
+
+    JwtService.generate = originalGenerate;
   });
 
   test("should not allow login with invalid credentials", async () => {
@@ -52,11 +58,14 @@ describe("Auth", () => {
       role: "candidate",
       id: faker.number.bigInt(),
     });
+    const originalGenerate = JwtService.generate;
+    JwtService.generate = jest.fn().mockResolvedValue("fake-token");
     const response = await factory.app.post("/auth/login").send({
       email: "fake@email.com",
       password: "wrong password",
     });
     expect(response.status).toBe(401);
+    JwtService.generate = originalGenerate;
   });
 
   test("should not allow login with invalid password hash", async () => {
@@ -90,7 +99,15 @@ describe("Auth", () => {
       sub: "1",
       role: "candidate",
     };
-    const token = JwtService.generate(payload);
+
+    // Mock JwtService.verify to return a promise that resolves with a fake payload
+    const originalVerify = JwtService.verify;
+    JwtService.verify = jest.fn().mockResolvedValue(payload);
+
+    const originalGenerate = JwtService.generate;
+    JwtService.generate = jest.fn().mockResolvedValue("fake-token");
+
+    const token = await JwtService.generate(payload);
 
     const candidateResponse = await factory.app
       .get("/auth/verify/candidate")
@@ -101,6 +118,10 @@ describe("Auth", () => {
       .get("/auth/verify/employer")
       .set("Authorization", `Bearer ${token}`);
     expect(employerResponse.status).toBe(403);
+
+    // Restore the original JwtService
+    JwtService.verify = originalVerify;
+    JwtService.generate = originalGenerate;
   });
 
   test("should return 401 when Authorization header is missing", async () => {
@@ -110,9 +131,15 @@ describe("Auth", () => {
 
   test("should return 401 for an invalid token", async () => {
     const invalidToken = "invalid_token_here";
+
+    // Mock JwtService.verify to return a promise that resolves with a fake payload
+    const originalVerify = JwtService.verify;
+    JwtService.verify = jest.fn().mockResolvedValue(null);
     const response = await factory.app
       .get("/auth/verify/candidate")
       .set("Authorization", `Bearer ${invalidToken}`);
     expect(response.status).toBe(401);
+    // Restore the original JwtService.generate
+    JwtService.verify = originalVerify;
   });
 });

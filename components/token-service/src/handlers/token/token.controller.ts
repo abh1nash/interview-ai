@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { TokenGenerateResponseDTO } from "./token.dto";
 
 export class TokenController {
   generate(request: Request, response: Response, next: NextFunction) {
@@ -13,7 +12,7 @@ export class TokenController {
         expiresIn: (expiry as string) || "1h",
       }
     );
-    response.json(new TokenGenerateResponseDTO(token));
+    response.send(token);
   }
   decode(request: Request, response: Response, next: NextFunction) {
     const token = request.query.token as string;

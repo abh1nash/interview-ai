@@ -1,1 +1,1 @@
-process.env.JWT_SECRET = "test-jwt-token";
+process.env.TOKEN_SERVICE_URL = "http://localhost:3000";

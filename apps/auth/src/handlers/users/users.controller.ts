@@ -25,7 +25,7 @@ export default class UsersController {
       const newUser = await prisma.user.create({
         data: { name, email, passwordHash: hash, role },
       });
-      const token = JwtService.generate({
+      const token = await JwtService.generate({
         sub: newUser.id.toString(),
         role: newUser.role,
       });

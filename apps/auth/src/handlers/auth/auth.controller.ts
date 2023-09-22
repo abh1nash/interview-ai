@@ -31,7 +31,7 @@ export default class AuthController {
       return;
     }
 
-    const token = JwtService.generate({
+    const token = await JwtService.generate({
       sub: user.id.toString(),
       role: user.role,
     });
@@ -47,7 +47,7 @@ export default class AuthController {
       return;
     }
 
-    const payload = JwtService.verify(token);
+    const payload = await JwtService.verify(token);
 
     if (!payload) {
       response.sendStatus(401);
