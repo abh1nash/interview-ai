@@ -15,7 +15,7 @@ describe("Jobs", () => {
   test("should create job with title and description", async () => {
     prismaMock.job.create.mockResolvedValue({
       id: 1,
-      userId: faker.number.bigInt(),
+      userId: faker.number.int(),
       title: "title",
       description: "description",
       createdAt: faker.date.recent(),
@@ -23,11 +23,11 @@ describe("Jobs", () => {
     });
     const originalVerify = JwtService.verify;
     JwtService.verify = jest.fn().mockResolvedValue({
-      sub: faker.number.bigInt(),
+      sub: faker.number.int(),
       role: "employer",
     });
     const response = await factory.app
-      .post("/create")
+      .post("/jobs/create")
       .send({
         title: "title",
         description: "description",
@@ -44,7 +44,7 @@ describe("Jobs", () => {
     prismaMock.job.findMany.mockResolvedValue([
       {
         id: 1,
-        userId: faker.number.bigInt(),
+        userId: faker.number.int(),
         title: "Job 1",
         description: "Description 1",
         createdAt: faker.date.recent(),
@@ -52,7 +52,7 @@ describe("Jobs", () => {
       },
       {
         id: 2,
-        userId: faker.number.bigInt(),
+        userId: faker.number.int(),
         title: "Job 2",
         description: "Description 2",
         createdAt: faker.date.recent(),
@@ -61,7 +61,7 @@ describe("Jobs", () => {
     ]);
 
     const response = await factory.app
-      .get("/list")
+      .get("/jobs/list")
       .set("Authorization", "Bearer fake-token-lol");
 
     expect(response.status).toBe(200);
@@ -70,7 +70,7 @@ describe("Jobs", () => {
   });
 
   test("should list all jobs created by a user", async () => {
-    const userId = faker.number.bigInt();
+    const userId = faker.number.int();
     prismaMock.job.findMany.mockResolvedValue([
       {
         id: 1,
@@ -83,7 +83,7 @@ describe("Jobs", () => {
     ]);
 
     const response = await factory.app
-      .get(`/list/user/${userId}`)
+      .get(`/jobs/list/user/${userId}`)
       .set("Authorization", "Bearer fake-token-lol");
 
     expect(response.status).toBe(200);
@@ -95,7 +95,7 @@ describe("Jobs", () => {
 
     prismaMock.job.findUnique.mockResolvedValue({
       id: jobId,
-      userId: faker.number.bigInt(),
+      userId: faker.number.int(),
       title: "Job 1",
       description: "Description 1",
       createdAt: faker.date.recent(),
@@ -103,7 +103,7 @@ describe("Jobs", () => {
     });
 
     const response = await factory.app
-      .get(`/${jobId}`)
+      .get(`/jobs/${jobId}`)
       .set("Authorization", "Bearer fake-token-lol");
 
     expect(response.status).toBe(200);
@@ -112,11 +112,11 @@ describe("Jobs", () => {
 
   test("should delete a job", async () => {
     const jobId = 1;
-    const userId = BigInt(1);
+    const userId = 1;
 
     prismaMock.job.findUnique.mockResolvedValue({
       id: jobId,
-      userId: BigInt(1),
+      userId: 1,
       title: "Job Title",
       description: "Job Description",
       createdAt: faker.date.recent(),
@@ -137,7 +137,7 @@ describe("Jobs", () => {
       role: "employer",
     });
     const response = await factory.app
-      .delete(`/${jobId}`)
+      .delete(`/jobs/${jobId}`)
       .set("Authorization", "Bearer fake-token-lol");
 
     JwtService.verify = originalVerify;
@@ -149,7 +149,7 @@ describe("Jobs", () => {
 
     prismaMock.job.findUnique.mockResolvedValue({
       id: jobId,
-      userId: BigInt(1),
+      userId: 1,
       title: "Job Title",
       description: "Job Description",
       createdAt: faker.date.recent(),
@@ -161,7 +161,7 @@ describe("Jobs", () => {
       role: "employer",
     });
     const response = await factory.app
-      .delete(`/${jobId}`)
+      .delete(`/jobs/${jobId}`)
       .set("Authorization", "Bearer fake-token-lol");
 
     JwtService.verify = originalVerify;

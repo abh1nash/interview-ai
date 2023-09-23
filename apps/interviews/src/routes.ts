@@ -1,3 +1,6 @@
+import { InterviewsController } from "./handlers/interviews/interviews.controller";
+import { JobsController } from "./handlers/jobs/jobs.controller";
+
 export enum RouteMethod {
   GET = "get",
   POST = "post",
@@ -12,4 +15,47 @@ export type Route = {
   action: string;
 };
 
-export const routes: Route[] = [];
+export const routes: Route[] = [
+  {
+    path: "/jobs/create",
+    method: RouteMethod.POST,
+    controller: JobsController,
+    action: "create",
+  },
+  {
+    path: "/jobs/list",
+    method: RouteMethod.GET,
+    controller: JobsController,
+    action: "list",
+  },
+  {
+    path: "/jobs/list/user/:userId",
+    method: RouteMethod.GET,
+    controller: JobsController,
+    action: "listByUser",
+  },
+  {
+    path: "/jobs/:id",
+    method: RouteMethod.GET,
+    controller: JobsController,
+    action: "get",
+  },
+  {
+    path: "/jobs/:id",
+    method: RouteMethod.DELETE,
+    controller: JobsController,
+    action: "delete",
+  },
+  {
+    path: "/interviews/:jobId/create",
+    method: RouteMethod.POST,
+    controller: InterviewsController,
+    action: "create",
+  },
+  {
+    path: "/interviews/:jobId",
+    method: RouteMethod.GET,
+    controller: InterviewsController,
+    action: "listByJob",
+  },
+];

@@ -81,7 +81,7 @@ export class JobsController {
         await JwtService.verify(token);
       const job = await prisma.job.findUnique({ where: { id } });
 
-      if (!decodedToken || BigInt(decodedToken.sub) != job?.userId) {
+      if (!decodedToken || parseInt(decodedToken.sub) != job?.userId) {
         response.sendStatus(403);
         return;
       }

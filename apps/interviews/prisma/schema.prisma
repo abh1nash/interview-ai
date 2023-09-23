@@ -10,10 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Job {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  title       String
+  description String
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @default(now()) @map("updated_at")
+  interviews  Interview[]
+}
+
 model Interview {
-  id          BigInt     @id @default(autoincrement())
-  candidateId BigInt     @map("candidate_id")
-  jobId       BigInt     @map("job_id")
+  id          Int        @id @default(autoincrement())
+  candidateId Int        @map("candidate_id")
+  job         Job        @relation(fields: [jobId], references: [id])
+  jobId       Int        @map("job_id")
   isCompleted Boolean    @default(false) @map("is_completed")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @default(now()) @map("updated_at")
@@ -21,9 +32,9 @@ model Interview {
 }
 
 model Question {
-  id          BigInt    @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   interview   Interview @relation(fields: [interviewId], references: [id])
-  interviewId BigInt    @map("interview_id")
+  interviewId Int       @map("interview_id")
   question    String
   answer      String?
   createdAt   DateTime  @default(now()) @map("created_at")
