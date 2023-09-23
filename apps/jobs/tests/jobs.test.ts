@@ -109,4 +109,62 @@ describe("Jobs", () => {
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
+
+  test("should delete a job", async () => {
+    const jobId = 1;
+    const userId = BigInt(1);
+
+    prismaMock.jobs.findUnique.mockResolvedValue({
+      id: jobId,
+      userId: BigInt(1),
+      title: "Job Title",
+      description: "Job Description",
+      createdAt: faker.date.recent(),
+      updatedAt: faker.date.recent(),
+    });
+
+    prismaMock.jobs.delete.mockResolvedValue({
+      id: jobId,
+      userId,
+      title: "To be deleted Job",
+      description: "This job has to be deleted.",
+      createdAt: faker.date.recent(),
+      updatedAt: faker.date.recent(),
+    });
+    const originalVerify = JwtService.verify;
+    JwtService.verify = jest.fn().mockResolvedValue({
+      sub: userId,
+      role: "employer",
+    });
+    const response = await factory.app
+      .delete(`/${jobId}`)
+      .set("Authorization", "Bearer fake-token-lol");
+
+    JwtService.verify = originalVerify;
+    expect(response.status).toBe(204);
+  });
+
+  test("should not allow deleting someone else's job", async () => {
+    const jobId = 1;
+
+    prismaMock.jobs.findUnique.mockResolvedValue({
+      id: jobId,
+      userId: BigInt(1),
+      title: "Job Title",
+      description: "Job Description",
+      createdAt: faker.date.recent(),
+      updatedAt: faker.date.recent(),
+    });
+    const originalVerify = JwtService.verify;
+    JwtService.verify = jest.fn().mockResolvedValue({
+      sub: "2",
+      role: "employer",
+    });
+    const response = await factory.app
+      .delete(`/${jobId}`)
+      .set("Authorization", "Bearer fake-token-lol");
+
+    JwtService.verify = originalVerify;
+    expect(response.status).toBe(403);
+  });
 });
