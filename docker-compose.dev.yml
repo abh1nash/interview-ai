@@ -1,0 +1,71 @@
+version: '3.8'
+services:
+  auth-db:
+    container_name: auth-db
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth
+    volumes:
+      - authdb:/var/lib/postgresql/data
+
+  interviews-db:
+    container_name: interviews-db
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: interviews
+    volumes:
+      - interviewsdb:/var/lib/postgresql/data
+  
+  token-service:
+    build: 
+      context: ./components/token-service/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./components/token-service:/app
+      - /app/node_modules
+
+  auth-app:
+    build: 
+      context: ./apps/auth/
+      dockerfile: Dockerfile.dev
+    
+    depends_on:
+      - auth-db
+      - token-service
+    links:
+      - auth-db
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@auth-db/auth
+      - TOKEN_SERVICE_URL=http://token-service:3000
+    volumes:
+      - ./apps/auth:/app
+      - /app/node_modules
+    
+  
+  interviews-app:
+    build: 
+      context: ./apps/interviews/
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - interviews-db
+      - token-service
+    links:
+      - interviews-db
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@interviews-db/interviews
+      - TOKEN_SERVICE_URL=http://token-service:3000
+    volumes:
+      - ./apps/interviews:/app
+      - /app/node_modules
+    
+    
+volumes:
+  authdb:
+  interviewsdb:
+
+networks:
+  default:

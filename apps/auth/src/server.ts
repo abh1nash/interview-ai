@@ -15,6 +15,6 @@ routes.forEach((route) => {
   );
 });
 
-app.listen(3001, () => {
-  console.log("Auth server running on port 3001.");
+app.listen(3000, () => {
+  console.log("Auth server running on port 3000.");
 });

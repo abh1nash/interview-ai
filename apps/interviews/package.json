@@ -5,7 +5,7 @@
   "main": "server.ts",
   "scripts": {
     "dev": "nodemon --exec ts-node src/server.ts",
-    "start": "ts-node src/server.ts",
+    "start": "prisma migrate deploy && ts-node src/server.ts",
     "test": "jest"
   },
   "author": "Abhinash Khatiwada <me@abhinash.net>",

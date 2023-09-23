@@ -11,6 +11,6 @@ routes.forEach((route) => {
   });
 });
 
-app.listen(3003, () => {
-  console.log("Interviews server running on 3003");
+app.listen(3000, () => {
+  console.log("Interviews server running on 3000");
 });

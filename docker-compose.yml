@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  auth-db:
+    container_name: auth-db
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth
+    volumes:
+      - authdb:/var/lib/postgresql/data
+
+  interviews-db:
+    container_name: interviews-db
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: interviews
+    volumes:
+      - interviewsdb:/var/lib/postgresql/data
+  
+  token-service:
+    build: ./components/token-service
+
+  auth-app:
+    build: ./apps/auth
+    depends_on:
+      - auth-db
+      - token-service
+    links:
+      - auth-db
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@auth-db/auth
+      - TOKEN_SERVICE_URL=http://token-service:3000
+  
+  interviews-app:
+    build: ./apps/interviews
+    depends_on:
+      - interviews-db
+      - token-service
+    links:
+      - interviews-db
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@interviews-db/interviews
+      - TOKEN_SERVICE_URL=http://token-service:3000
+    
+volumes:
+  authdb:
+  interviewsdb:
+
+networks:
+  default:
