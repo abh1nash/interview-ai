@@ -10,9 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model job {
-  id          Int    @id @default(autoincrement())
+model jobs {
+  id          Int      @id @default(autoincrement())
   userId      BigInt
   title       String
   description String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @map("updated_at")
 }
