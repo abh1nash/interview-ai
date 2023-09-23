@@ -16,7 +16,7 @@ export class JobsController {
 
       const { title, description } = request.body;
 
-      const job = await prisma.jobs.create({
+      const job = await prisma.job.create({
         data: {
           title,
           description,
@@ -35,7 +35,7 @@ export class JobsController {
 
   async list(request: Request, response: Response, next: NextFunction) {
     try {
-      const jobs = await prisma.jobs.findMany();
+      const jobs = await prisma.job.findMany();
       response.status(200).json(new JobListResponseDTO(jobs).list);
     } catch (err) {
       console.log(err);
@@ -46,7 +46,7 @@ export class JobsController {
   async listByUser(request: Request, response: Response, next: NextFunction) {
     try {
       const userId = parseInt(request.params.userId);
-      const jobs = await prisma.jobs.findMany({ where: { userId } });
+      const jobs = await prisma.job.findMany({ where: { userId } });
       response.status(200).json(new JobListResponseDTO(jobs).list);
     } catch (err) {
       console.log(err);
@@ -57,7 +57,7 @@ export class JobsController {
   async get(request: Request, response: Response, next: NextFunction) {
     try {
       const id = parseInt(request.params.id);
-      const job = await prisma.jobs.findUnique({ where: { id } });
+      const job = await prisma.job.findUnique({ where: { id } });
       if (!job) {
         response.sendStatus(404);
         return;
@@ -79,7 +79,7 @@ export class JobsController {
       const token = request.get("Authorization")?.split(" ")[1] as string;
       const decodedToken: { sub: string; role: string } =
         await JwtService.verify(token);
-      const job = await prisma.jobs.findUnique({ where: { id } });
+      const job = await prisma.job.findUnique({ where: { id } });
 
       if (!decodedToken || BigInt(decodedToken.sub) != job?.userId) {
         response.sendStatus(403);
@@ -91,7 +91,7 @@ export class JobsController {
         return;
       }
 
-      await prisma.jobs.delete({ where: { id } });
+      await prisma.job.delete({ where: { id } });
       response.sendStatus(204);
     } catch (err) {
       console.log(err);

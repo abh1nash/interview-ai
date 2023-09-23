@@ -13,7 +13,7 @@ describe("Jobs", () => {
   });
 
   test("should create job with title and description", async () => {
-    prismaMock.jobs.create.mockResolvedValue({
+    prismaMock.job.create.mockResolvedValue({
       id: 1,
       userId: faker.number.bigInt(),
       title: "title",
@@ -41,7 +41,7 @@ describe("Jobs", () => {
   });
 
   test("should list all jobs", async () => {
-    prismaMock.jobs.findMany.mockResolvedValue([
+    prismaMock.job.findMany.mockResolvedValue([
       {
         id: 1,
         userId: faker.number.bigInt(),
@@ -71,7 +71,7 @@ describe("Jobs", () => {
 
   test("should list all jobs created by a user", async () => {
     const userId = faker.number.bigInt();
-    prismaMock.jobs.findMany.mockResolvedValue([
+    prismaMock.job.findMany.mockResolvedValue([
       {
         id: 1,
         userId: userId,
@@ -93,7 +93,7 @@ describe("Jobs", () => {
   test("should show details of a job based on id", async () => {
     const jobId = 1;
 
-    prismaMock.jobs.findUnique.mockResolvedValue({
+    prismaMock.job.findUnique.mockResolvedValue({
       id: jobId,
       userId: faker.number.bigInt(),
       title: "Job 1",
@@ -114,7 +114,7 @@ describe("Jobs", () => {
     const jobId = 1;
     const userId = BigInt(1);
 
-    prismaMock.jobs.findUnique.mockResolvedValue({
+    prismaMock.job.findUnique.mockResolvedValue({
       id: jobId,
       userId: BigInt(1),
       title: "Job Title",
@@ -123,7 +123,7 @@ describe("Jobs", () => {
       updatedAt: faker.date.recent(),
     });
 
-    prismaMock.jobs.delete.mockResolvedValue({
+    prismaMock.job.delete.mockResolvedValue({
       id: jobId,
       userId,
       title: "To be deleted Job",
@@ -147,7 +147,7 @@ describe("Jobs", () => {
   test("should not allow deleting someone else's job", async () => {
     const jobId = 1;
 
-    prismaMock.jobs.findUnique.mockResolvedValue({
+    prismaMock.job.findUnique.mockResolvedValue({
       id: jobId,
       userId: BigInt(1),
       title: "Job Title",
