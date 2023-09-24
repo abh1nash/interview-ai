@@ -43,4 +43,31 @@ export default class UsersController {
       return;
     }
   }
+
+  async me(request: Request, response: Response, next: NextFunction) {
+    const token = request.get("Authorization")?.split(" ")[1];
+    if (!token) {
+      response.sendStatus(401);
+      return;
+    }
+    const payload = await JwtService.verify(token);
+    if (!payload) {
+      response.sendStatus(401);
+      return;
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(payload.sub) },
+    });
+    if (!user) {
+      response.sendStatus(401);
+      return;
+    }
+    response
+      .status(200)
+      .json({
+        name: user.name,
+        email: user.email,
+        id: parseInt(user.id.toString()),
+      });
+  }
 }

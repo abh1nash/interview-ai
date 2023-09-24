@@ -35,4 +35,10 @@ export const routes: Route[] = [
     controller: AuthController,
     action: "verify",
   },
+  {
+    path: "/me",
+    method: RouteMethod.GET,
+    controller: UsersController,
+    action: "me",
+  },
 ];

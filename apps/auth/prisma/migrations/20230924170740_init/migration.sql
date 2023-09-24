@@ -1,8 +1,12 @@
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('employer', 'candidate');
+
 -- CreateTable
 CREATE TABLE "User" (
-    "id" BIGSERIAL NOT NULL,
+    "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT,
+    "role" "Role" NOT NULL DEFAULT 'candidate',
     "password_hash" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
