@@ -3,7 +3,7 @@ export class LoginDTO {
 }
 
 export class LoginResponseDTO {
-  constructor(public token: string) {}
+  constructor(public token: string, public role: string) {}
 }
 
 export class LoginErrorResponseDTO {

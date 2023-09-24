@@ -7,6 +7,12 @@ import JwtService from "src/services/jwt.service";
 export default class AuthController {
   async login(request: Request, response: Response, next: NextFunction) {
     const { email, password } = request.body;
+    if (!email || !password) {
+      response
+        .status(401)
+        .json(new LoginErrorResponseDTO("Invalid credentials."));
+      return;
+    }
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
@@ -36,7 +42,7 @@ export default class AuthController {
       role: user.role,
     });
 
-    response.status(200).json(new LoginResponseDTO(token));
+    response.status(200).json(new LoginResponseDTO(token, user.role));
   }
 
   async verify(request: Request, response: Response, next: NextFunction) {
