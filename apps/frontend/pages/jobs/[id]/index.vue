@@ -16,6 +16,8 @@ const { data, error } = await useFetch<{
   baseURL: useRuntimeConfig().public.apiBaseUrl,
 });
 
+const isLoading = ref(false);
+
 if (error.value) {
   const toast = useToast();
   toast.add({
@@ -28,18 +30,77 @@ if (error.value) {
     message: "Job listing not found.",
   });
 }
+const token = useLocalStorage<string | undefined>("token", undefined);
+const { data: my, execute } = await useFetch<{
+  id: number;
+  name: string;
+  email: string;
+  role: "candidate" | "employer";
+}>("/api/user/me/", {
+  method: "get",
+  baseURL: useRuntimeConfig().public.apiBaseUrl,
+  headers: {
+    Authorization: `Bearer ${token.value}`,
+  },
+  immediate: false,
+});
+
+onMounted(() => {
+  if (token.value) {
+    execute();
+  }
+});
+
+const onDelete = async () => {
+  isLoading.value = true;
+  const { error } = await useFetch("/api/jobs/jobs/" + id, {
+    method: "delete",
+    baseURL: useRuntimeConfig().public.apiBaseUrl,
+    headers: {
+      Authorization: `Bearer ${token.value}`,
+    },
+  });
+  isLoading.value = false;
+
+  if (error.value) {
+    const toast = useToast();
+    toast.add({
+      title: "Error",
+      color: "red",
+      description: error.value?.data?.message || "Unable to delete job.",
+    });
+    return;
+  }
+  const toast = useToast();
+  toast.add({
+    title: "Success",
+    color: "green",
+    description: "You have successfully deleted a job.",
+  });
+  navigateTo({ name: "home" });
+};
 </script>
 <template>
   <div>
     <div class="flex">
+      <AppLoader :loading="isLoading"></AppLoader>
       <div class="flex-1">
         <h1 class="text-4xl font-bold font-display">
           {{ data?.title || "N/A" }}
         </h1>
       </div>
-      <div>
-        <AppButton :to="{ name: 'interview', params: { id } }">Apply</AppButton>
-      </div>
+      <client-only>
+        <div v-if="my?.role == 'employer' && data?.userId == my?.id">
+          <AppButton @click="onDelete" type="button" destructive
+            >Delete</AppButton
+          >
+        </div>
+        <div v-if="my?.role == 'candidate'">
+          <AppButton :to="{ name: 'interview', params: { id } }"
+            >Apply</AppButton
+          >
+        </div>
+      </client-only>
     </div>
     <div class="grid gap-4 py-4">
       <div class="card bg-white shadow-lg shadow-blue-100">
