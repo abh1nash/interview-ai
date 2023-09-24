@@ -62,12 +62,11 @@ export default class UsersController {
       response.sendStatus(401);
       return;
     }
-    response
-      .status(200)
-      .json({
-        name: user.name,
-        email: user.email,
-        id: parseInt(user.id.toString()),
-      });
+    response.status(200).json({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      id: parseInt(user.id.toString()),
+    });
   }
 }

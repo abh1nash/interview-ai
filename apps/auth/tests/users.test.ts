@@ -86,6 +86,7 @@ describe("Users", () => {
     expect(response.body).toHaveProperty("name", user.name);
     expect(response.body).toHaveProperty("email", user.email);
     expect(response.body).toHaveProperty("id", user.id);
+    expect(response.body).toHaveProperty("role", user.role);
   });
 
   it("should return 401 if token is not provided", async () => {
