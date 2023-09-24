@@ -21,5 +21,6 @@ useHead({
     <NuxtLayout>
       <NuxtPage></NuxtPage>
     </NuxtLayout>
+    <UNotifications />
   </div>
 </template>

@@ -3,7 +3,7 @@ definePageMeta({
   name: "job",
 });
 
-const { jobId } = useRoute().params as { jobId: string };
+const { id } = useRoute().params as { id: string };
 </script>
 <template>
   <div>
@@ -12,9 +12,7 @@ const { jobId } = useRoute().params as { jobId: string };
         <h1 class="text-4xl font-bold font-display">Job Title</h1>
       </div>
       <div>
-        <AppButton :to="{ name: 'interview', params: { jobId } }"
-          >Apply</AppButton
-        >
+        <AppButton :to="{ name: 'interview', params: { id } }">Apply</AppButton>
       </div>
     </div>
     <div class="grid gap-4 py-4">

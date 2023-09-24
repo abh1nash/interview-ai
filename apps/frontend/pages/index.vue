@@ -22,7 +22,7 @@ definePageMeta({
         <div class="card-body">
           <div class="font-bold text-2xl">Job Title</div>
           <div>
-            <AppButton :to="{ name: 'job', params: { jobId: i } }" flat-primary
+            <AppButton :to="{ name: 'job', params: { id: i } }" flat-primary
               >View Description</AppButton
             >
           </div>
