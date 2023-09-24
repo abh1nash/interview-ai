@@ -6,6 +6,7 @@ export enum RouteMethod {
   POST = "post",
   PUT = "put",
   DELETE = "delete",
+  ALL = "all",
 }
 
 export type Route = {
@@ -30,7 +31,7 @@ export const routes: Route[] = [
   },
   {
     path: "/auth/verify/:role",
-    method: RouteMethod.GET,
+    method: RouteMethod.ALL,
     controller: AuthController,
     action: "verify",
   },

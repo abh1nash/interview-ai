@@ -3,6 +3,7 @@ import prisma from "prisma/client";
 import JwtService from "src/services/jwt.service";
 import {
   JobCreateResponseDTO,
+  JobErrorResponseDTO,
   JobListResponseDTO,
   JobResponseDTO,
 } from "./jobs.dto";
@@ -15,6 +16,13 @@ export class JobsController {
         await JwtService.verify(token);
 
       const { title, description } = request.body;
+
+      if (!title || !description) {
+        response
+          .status(400)
+          .json(new JobErrorResponseDTO("Title and description are required."));
+        return;
+      }
 
       const job = await prisma.job.create({
         data: {

@@ -24,3 +24,7 @@ export class JobListResponseDTO {
     }));
   }
 }
+
+export class JobErrorResponseDTO {
+  constructor(public message: string) {}
+}
