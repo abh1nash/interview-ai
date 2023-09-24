@@ -9,6 +9,10 @@ services:
   gateway:
     image: nginx:alpine
     container_name: gateway
+    depends_on:
+      - auth-app
+      - interviews-app
+      - frontend
     volumes:
       - ./components/nginx/conf.d/:/etc/nginx/conf.d/
     ports:
@@ -79,6 +83,17 @@ services:
       - ./apps/interviews:/app
       - /app/node_modules
     
+  frontend: 
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    ports:
+      - 24678:24678
+    volumes:
+      - ./apps/frontend:/frontend
+      - /frontend/node_modules
+    environment:
+      - API_BASE_URL=/api
     
 volumes:
   authdb:

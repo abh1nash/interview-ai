@@ -9,6 +9,10 @@ services:
   gateway:
     image: nginx:alpine
     container_name: gateway
+    depends_on:
+      - auth-app
+      - interviews-app
+      - frontend
     volumes:
       - ./components/nginx/conf.d/:/etc/nginx/conf.d/
     ports:
@@ -61,6 +65,13 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:postgres@interviews-db/interviews
       - TOKEN_SERVICE_URL=http://token-service:3000
+  
+  frontend: 
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    environment:
+      - API_BASE_URL=/api
     
 volumes:
   authdb:
