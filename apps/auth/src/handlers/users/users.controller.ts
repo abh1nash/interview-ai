@@ -12,6 +12,12 @@ export default class UsersController {
   async create(request: Request, response: Response, next: NextFunction) {
     const { name, email, password, role } =
       request.body as UserCreateRequestDTO;
+    if (!name || !email || !password) {
+      response
+        .status(400)
+        .json(new UserErrorResponseDTO("Missing required fields."));
+      return;
+    }
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       response

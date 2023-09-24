@@ -1,5 +1,20 @@
 version: '3.8'
 services:
+  rabbitmq:
+      image: rabbitmq:3-management-alpine
+      container_name: 'rabbitmq'
+      ports:
+          - 5672:5672
+          - 15672:15672
+  gateway:
+    image: nginx:alpine
+    container_name: gateway
+    volumes:
+      - ./components/nginx/conf.d/:/etc/nginx/conf.d/
+    ports:
+      - "80:80"
+      - "443:443"
+
   auth-db:
     container_name: auth-db
     image: postgres:alpine
@@ -24,6 +39,8 @@ services:
     build: 
       context: ./components/token-service/
       dockerfile: Dockerfile.dev
+    environment:
+      - JWT_SECRET=this-is-a-very-secret-key-okay-asdjhjasjdhajkshdkjashdkj
     volumes:
       - ./components/token-service:/app
       - /app/node_modules
