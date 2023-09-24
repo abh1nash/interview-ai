@@ -31,7 +31,11 @@ if (error.value) {
   });
 }
 const token = useLocalStorage<string | undefined>("token", undefined);
-const { data: my, execute } = await useFetch<{
+const {
+  data: my,
+  execute,
+  error: profileError,
+} = await useFetch<{
   id: number;
   name: string;
   email: string;
@@ -43,6 +47,12 @@ const { data: my, execute } = await useFetch<{
     Authorization: `Bearer ${token.value}`,
   },
   immediate: false,
+});
+
+watchDebounced(profileError, (e) => {
+  if (e) {
+    token.value = undefined;
+  }
 });
 
 onMounted(() => {
