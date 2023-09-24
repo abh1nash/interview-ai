@@ -11,6 +11,7 @@ export class JobResponseDTO {
     public title: string,
     public description: string,
     public id: number,
+    public userId: number,
     public createdAt: Date
   ) {}
 }

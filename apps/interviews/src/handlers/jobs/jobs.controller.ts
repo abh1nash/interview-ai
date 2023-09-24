@@ -73,7 +73,13 @@ export class JobsController {
       response
         .status(200)
         .json(
-          new JobResponseDTO(job.title, job.description, job.id, job.createdAt)
+          new JobResponseDTO(
+            job.title,
+            job.description,
+            job.id,
+            job.userId,
+            job.createdAt
+          )
         );
     } catch (err) {
       console.log(err);

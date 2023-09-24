@@ -2,6 +2,13 @@
 definePageMeta({
   name: "home",
 });
+
+const { data, error } = await useFetch<
+  { id: number; title: string; createdAt: string }[]
+>("/api/jobs/jobs/list", {
+  method: "get",
+  baseURL: useRuntimeConfig().public.apiBaseUrl,
+});
 </script>
 <template>
   <div>
@@ -16,13 +23,19 @@ definePageMeta({
     <div class="grid gap-4 py-4">
       <div
         class="card bg-white shadow-lg shadow-blue-100"
-        v-for="i in 10"
-        :key="i"
+        v-for="job in data"
+        :key="job.id"
       >
         <div class="card-body">
-          <div class="font-bold text-2xl">Job Title</div>
+          <div class="font-bold text-2xl">
+            <nuxt-link :to="{ name: 'job', params: { id: job.id } }">
+              {{ job.title }}
+            </nuxt-link>
+          </div>
           <div>
-            <AppButton :to="{ name: 'job', params: { id: i } }" flat-primary
+            <AppButton
+              :to="{ name: 'job', params: { id: job.id } }"
+              flat-primary
               >View Description</AppButton
             >
           </div>
