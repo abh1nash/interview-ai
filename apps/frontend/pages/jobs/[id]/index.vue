@@ -47,12 +47,11 @@ const {
     Authorization: `Bearer ${token.value}`,
   },
   immediate: false,
-});
-
-watchDebounced(profileError, (e) => {
-  if (e) {
-    token.value = undefined;
-  }
+  onResponseError: (e) => {
+    if (e.response.status === 401) {
+      token.value = undefined;
+    }
+  },
 });
 
 onMounted(() => {
@@ -89,6 +88,32 @@ const onDelete = async () => {
   });
   navigateTo({ name: "home" });
 };
+
+const isCreatingInterview = ref(false);
+const createInterview = async () => {
+  isCreatingInterview.value = true;
+  const { data, error } = await useFetch<{ id: number }>(
+    `/api/jobs/interviews/${id}/create`,
+    {
+      method: "post",
+      baseURL: useRuntimeConfig().public.apiBaseUrl,
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+      },
+    }
+  );
+  isCreatingInterview.value = false;
+  if (error.value) {
+    const toast = useToast();
+    toast.add({
+      title: "Error",
+      color: "red",
+      description: error.value?.data?.message || "Unable to create interview.",
+    });
+    return;
+  }
+  navigateTo({ name: "interview", params: { id: data.value?.id } });
+};
 </script>
 <template>
   <div>
@@ -106,7 +131,10 @@ const onDelete = async () => {
           >
         </div>
         <div v-if="my?.role == 'candidate'">
-          <AppButton :to="{ name: 'interview', params: { id } }"
+          <AppButton
+            :loading="isCreatingInterview"
+            type="button"
+            @click="createInterview"
             >Apply</AppButton
           >
         </div>

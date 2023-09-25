@@ -14,6 +14,7 @@ routes.forEach((route) => {
       new (route.controller as any)()[route.action](request, response, next);
     }
   );
+  console.log(`Route ${route.method.toUpperCase()} ${route.path} registered.`);
 });
 
 app.listen(3000, () => {

@@ -1,5 +1,6 @@
 import { InterviewsController } from "./handlers/interviews/interviews.controller";
 import { JobsController } from "./handlers/jobs/jobs.controller";
+import { QuestionsController } from "./handlers/questions/questions.controller";
 
 export enum RouteMethod {
   GET = "get",
@@ -57,5 +58,17 @@ export const routes: Route[] = [
     method: RouteMethod.GET,
     controller: InterviewsController,
     action: "listByJob",
+  },
+  {
+    path: "/interviews/:interviewId/questions/next",
+    method: RouteMethod.GET,
+    controller: QuestionsController,
+    action: "nextQuestion",
+  },
+  {
+    path: "/questions/:questionId/answer",
+    method: RouteMethod.PUT,
+    controller: QuestionsController,
+    action: "answerQuestion",
   },
 ];
