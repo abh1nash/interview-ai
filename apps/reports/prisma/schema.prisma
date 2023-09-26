@@ -10,9 +10,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model job {
-  id          Int    @id @default(autoincrement())
-  userId      BigInt
-  title       String
-  description String
+model Report {
+  id               Int     @id @default(autoincrement())
+  interviewId      Int     @unique @map("interview_id")
+  summary          String?
+  suitabilityScore Int?    @map("suitability_score")
+  sentimentSummary String? @map("sentiment_summary")
+  knowledgeSummary String? @map("knowledge_summary")
 }
