@@ -9,6 +9,10 @@ const { data, error } = await useFetch<
   method: "get",
   baseURL: useRuntimeConfig().public.apiBaseUrl,
 });
+
+const { data: myData } = useNuxtData<{
+  role: "candidate" | "employer";
+}>("profile");
 </script>
 <template>
   <div>
@@ -16,7 +20,7 @@ const { data, error } = await useFetch<
       <div class="flex-1">
         <h1 class="text-4xl font-bold font-display">Available Jobs</h1>
       </div>
-      <div>
+      <div v-if="myData?.role == 'employer'">
         <AppButton :to="{ name: 'new-job' }">New Job</AppButton>
       </div>
     </div>
