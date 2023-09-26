@@ -27,7 +27,7 @@ const onSubmit = handleSubmit(async (formData) => {
       body: formData,
       headers: {
         Authorization: `Bearer ${
-          useLocalStorage<string | undefined>("token", undefined).value
+          useLocalStorage<string | null>("token", null).value
         }`,
       },
     }

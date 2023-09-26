@@ -15,7 +15,7 @@ const { handleSubmit } = useForm({
 
 const isLoading = ref(false);
 
-const token = useLocalStorage<string | undefined>("token", undefined);
+const token = useLocalStorage<string | null>("token", null);
 
 const onSubmit = handleSubmit(async (formData) => {
   isLoading.value = true;

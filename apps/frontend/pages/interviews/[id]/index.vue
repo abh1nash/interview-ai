@@ -7,7 +7,7 @@ definePageMeta({
 
 const router = useRouter();
 
-const token = useLocalStorage<string | undefined>("token", undefined);
+const token = useLocalStorage<string | null>("token", null);
 
 const { data, error, execute, pending } = await useFetch<{
   id: number;

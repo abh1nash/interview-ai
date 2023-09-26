@@ -30,7 +30,7 @@ if (error.value) {
     message: "Job listing not found.",
   });
 }
-const token = useLocalStorage<string | undefined>("token", undefined);
+const token = useLocalStorage<string | null>("token", null);
 const {
   data: my,
   execute,
@@ -49,7 +49,7 @@ const {
   immediate: false,
   onResponseError: (e) => {
     if (e.response.status === 401) {
-      token.value = undefined;
+      token.value = null;
     }
   },
 });
