@@ -2,7 +2,7 @@
 definePageMeta({
   name: "home",
 });
-
+const { isLoggedIn } = useAuth();
 const { data, error } = await useFetch<
   { id: number; title: string; createdAt: string }[]
 >("/api/jobs/jobs/list", {
@@ -20,7 +20,7 @@ const { data: myData } = useNuxtData<{
       <div class="flex-1">
         <h1 class="text-4xl font-bold font-display">Available Jobs</h1>
       </div>
-      <div v-if="myData?.role == 'employer'">
+      <div v-if="isLoggedIn && myData?.role == 'employer'">
         <AppButton :to="{ name: 'new-job' }">New Job</AppButton>
       </div>
     </div>
