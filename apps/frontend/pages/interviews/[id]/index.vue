@@ -21,8 +21,10 @@ const { data, error, execute, pending } = await useFetch<{
   immediate: false,
 });
 
+const { isLoggedIn } = useAuth();
+
 onMounted(async () => {
-  if (token.value) {
+  if (isLoggedIn.value) {
     await execute();
   }
 });

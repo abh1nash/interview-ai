@@ -30,6 +30,9 @@ if (error.value) {
     message: "Job listing not found.",
   });
 }
+
+const { setToken } = useAuth();
+
 const token = useLocalStorage<string | null>("token", null);
 const {
   data: my,
@@ -41,6 +44,7 @@ const {
   email: string;
   role: "candidate" | "employer";
 }>("/api/user/me/", {
+  key: "profile",
   method: "get",
   baseURL: useRuntimeConfig().public.apiBaseUrl,
   headers: {
@@ -49,13 +53,15 @@ const {
   immediate: false,
   onResponseError: (e) => {
     if (e.response.status === 401) {
-      token.value = null;
+      setToken(null);
     }
   },
 });
 
+const { isLoggedIn } = useAuth();
+
 onMounted(() => {
-  if (token.value) {
+  if (isLoggedIn.value) {
     execute();
   }
 });

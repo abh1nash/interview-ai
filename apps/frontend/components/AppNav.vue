@@ -1,4 +1,31 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const token = useLocalStorage<string | null>("token", null);
+
+const { setToken } = useAuth();
+const {
+  data: my,
+  execute,
+  error: profileError,
+} = await useFetch<{
+  id: number;
+  name: string;
+  email: string;
+  role: "candidate" | "employer";
+}>("/api/user/me/", {
+  key: "profile",
+  method: "get",
+  baseURL: useRuntimeConfig().public.apiBaseUrl,
+  headers: {
+    Authorization: `Bearer ${token.value}`,
+  },
+  immediate: false,
+  onResponseError: (e) => {
+    if (e.response.status === 401) {
+      setToken(null);
+    }
+  },
+});
+</script>
 <template>
   <div
     class="w-full fixed top-0 h-16 bg-white/25 backdrop-blur py-1 z-10 border border-b border-white"
@@ -11,7 +38,7 @@
             <span class="font-bold text-blue-500">Interview</span>
           </nuxt-link>
         </div>
-        <div class="flex gap-2">
+        <div v-if="!token" class="flex gap-2">
           <AppButton flat :to="{ name: 'login' }">Login</AppButton>
           <AppButton :to="{ name: 'sign-up' }">Sign Up</AppButton>
         </div>

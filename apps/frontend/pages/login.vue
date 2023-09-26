@@ -15,7 +15,7 @@ const { handleSubmit } = useForm({
 
 const isLoading = ref(false);
 
-const token = useLocalStorage<string | null>("token", null);
+const { setToken } = useAuth();
 
 const onSubmit = handleSubmit(async (formData) => {
   isLoading.value = true;
@@ -38,7 +38,7 @@ const onSubmit = handleSubmit(async (formData) => {
     return;
   }
   if (data.value) {
-    token.value = data.value.token;
+    setToken(data.value.token);
     navigateTo({ name: "home" });
   }
 });
