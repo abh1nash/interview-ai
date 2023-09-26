@@ -54,6 +54,12 @@ export class QuestionsController {
       return;
     }
 
+    // prevent querying llm if interview is completed
+    if (interview.isCompleted) {
+      response.status(200).json(new QuestionResponseDTO(-1, "[==END==]"));
+      return;
+    }
+
     const history: { role: string; content: string }[] = [];
     history.push(new SystemMessageDTO(interview.job.description));
 
