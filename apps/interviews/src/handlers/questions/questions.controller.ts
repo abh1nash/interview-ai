@@ -8,6 +8,7 @@ import {
   SystemMessageDTO,
 } from "./questions.dto";
 import LLMService from "src/services/llm.service";
+import { RabbitMQ } from "src/services/rabbitmq.service";
 
 export class QuestionsController {
   async nextQuestion(request: Request, response: Response, next: NextFunction) {
@@ -81,6 +82,23 @@ export class QuestionsController {
           isCompleted: true,
         },
       });
+
+      const questionsAndAnswers = await prisma.question.findMany({
+        where: {
+          interviewId,
+        },
+      });
+
+      // Send a message to RabbitMQ to generate a report
+      RabbitMQ.sendToQueue("generate_report_queue", {
+        interviewId,
+        employerId: interview.job.userId,
+        jobId: interview.job.id,
+        candidateId: interview.candidateId,
+        questionsAndAnswers,
+        jobDescription: interview.job.description,
+      });
+
       response.status(200).json(new QuestionResponseDTO(-1, "[==END==]"));
       return;
     }

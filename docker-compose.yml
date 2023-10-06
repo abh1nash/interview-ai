@@ -38,6 +38,16 @@ services:
       POSTGRES_DB: interviews
     volumes:
       - interviewsdb:/var/lib/postgresql/data
+
+  reports-db:
+    container_name: reports-db
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: reports
+    volumes:
+      - reportsdb:/var/lib/postgresql/data
   
   token-service:
     build: ./components/token-service
@@ -65,6 +75,19 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:postgres@interviews-db/interviews
       - TOKEN_SERVICE_URL=http://token-service:3000
+      - RABBIT_URL=amqp://rabbitmq:5672
+
+  reports-app:
+    build: ./apps/reports
+    depends_on:
+      - reports-db
+      - token-service
+    links:
+      - reports-db
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@reports-db/reports
+      - TOKEN_SERVICE_URL=http://token-service:3000
+      - RABBIT_URL=amqp://rabbitmq:5672
   
   frontend: 
     build:
@@ -76,6 +99,7 @@ services:
 volumes:
   authdb:
   interviewsdb:
+  reportsdb:
 
 networks:
   default:

@@ -11,10 +11,15 @@ datasource db {
 }
 
 model Report {
-  id               Int     @id @default(autoincrement())
-  interviewId      Int     @unique @map("interview_id")
+  id               Int      @id @default(autoincrement())
+  interviewId      Int      @unique @map("interview_id")
+  employerId       Int      @map("employer_id")
+  jobId            Int      @map("job_id")
+  candidateId      Int      @map("candidate_id")
   summary          String?
-  suitabilityScore Int?    @map("suitability_score")
-  sentimentSummary String? @map("sentiment_summary")
-  knowledgeSummary String? @map("knowledge_summary")
+  suitabilityScore Int?     @map("suitability_score")
+  sentimentSummary String?  @map("sentiment_summary")
+  knowledgeSummary String?  @map("knowledge_summary")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
 }
