@@ -1,18 +1,26 @@
 version: '3.8'
 services:
   rabbitmq:
-      image: rabbitmq:3-management-alpine
-      container_name: 'rabbitmq'
-      ports:
-          - 5672:5672
-          - 15672:15672
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    networks:
+      app-network:
+        aliases:
+          - rabbitmq
+
   gateway:
     image: nginx:alpine
     container_name: gateway
     depends_on:
       - auth-app
       - interviews-app
+      - reports-app
       - frontend
+    networks:
+      - app-network
     volumes:
       - ./components/nginx/conf.d/:/etc/nginx/conf.d/
     ports:
@@ -22,6 +30,8 @@ services:
   auth-db:
     container_name: auth-db
     image: postgres:alpine
+    networks:
+      - app-network
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -32,6 +42,8 @@ services:
   interviews-db:
     container_name: interviews-db
     image: postgres:alpine
+    networks:
+      - app-network
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -42,6 +54,8 @@ services:
   reports-db:
     container_name: reports-db
     image: postgres:alpine
+    networks:
+      - app-network
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -55,6 +69,8 @@ services:
       dockerfile: Dockerfile.dev
     environment:
       - JWT_SECRET=this-is-a-very-secret-key-okay-asdjhjasjdhajkshdkjashdkj
+    networks:
+      - app-network
     volumes:
       - ./components/token-service:/app
       - /app/node_modules
@@ -63,7 +79,8 @@ services:
     build: 
       context: ./apps/auth/
       dockerfile: Dockerfile.dev
-    
+    networks:
+      - app-network
     depends_on:
       - auth-db
       - token-service
@@ -82,10 +99,11 @@ services:
       context: ./apps/interviews/
       dockerfile: Dockerfile.dev
     depends_on:
+      - rabbitmq
       - interviews-db
       - token-service
-    links:
-      - interviews-db
+    networks:
+      - app-network
     environment:
       - DATABASE_URL=postgres://postgres:postgres@interviews-db/interviews
       - TOKEN_SERVICE_URL=http://token-service:3000
@@ -99,10 +117,11 @@ services:
       context: ./apps/reports/
       dockerfile: Dockerfile.dev
     depends_on:
+      - rabbitmq
       - reports-db
       - token-service
-    links:
-      - reports-db
+    networks:
+      - app-network
     environment:
       - DATABASE_URL=postgres://postgres:postgres@reports-db/reports
       - TOKEN_SERVICE_URL=http://token-service:3000
@@ -117,6 +136,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 24678:24678
+    networks:
+      - app-network
     volumes:
       - ./apps/frontend:/frontend
       - /frontend/node_modules
@@ -131,4 +152,4 @@ volumes:
   reportsdb:
 
 networks:
-  default:
+  app-network:

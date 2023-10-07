@@ -12,6 +12,7 @@ services:
     depends_on:
       - auth-app
       - interviews-app
+      - reports-app
       - frontend
     volumes:
       - ./components/nginx/conf.d/:/etc/nginx/conf.d/
@@ -70,6 +71,7 @@ services:
     depends_on:
       - interviews-db
       - token-service
+      - rabbitmq
     links:
       - interviews-db
     environment:
@@ -82,6 +84,7 @@ services:
     depends_on:
       - reports-db
       - token-service
+      - rabbitmq
     links:
       - reports-db
     environment:

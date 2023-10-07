@@ -4,12 +4,14 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
+    "dev": "nodemon --exec ts-node src/server.ts",
+    "start": "prisma migrate deploy && ts-node src/server.ts",
     "test": "jest"
   },
   "author": "Abhinash Khatiwada <me@abhinash.net>",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.3.1",
+    "@prisma/client": "^5.4.1",
     "amqplib": "^0.10.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",

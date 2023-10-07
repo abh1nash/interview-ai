@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "prisma/client";
+import prisma from "../../../prisma/client";
 
 export class ReportsController {
   // List all reports for a specific job
@@ -9,9 +9,7 @@ export class ReportsController {
       const reports = await prisma.report.findMany({ where: { jobId } });
 
       if (!reports || reports.length === 0) {
-        response
-          .status(404)
-          .send({ message: "No reports found for this job." });
+        response.status(200).send([]);
         return;
       }
 

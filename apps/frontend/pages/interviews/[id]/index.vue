@@ -92,9 +92,11 @@ const isDisabled = computed(() => {
       </div>
       <form v-if="data?.id !== -1" @submit.prevent="onAnswer">
         <textarea
+          @keydown.enter.prevent="onAnswer"
           ref="textarea"
           v-model="input"
-          class="textarea textarea-ghost resize-none w-full text-3xl p-0 my-6 focus:bg-transparent focus:outline-none"
+          :disabled="isAnswering"
+          class="textarea textarea-ghost resize-none w-full text-3xl p-0 my-6 focus:bg-transparent disabled:bg-transparent disabled:border-none focus:outline-none"
           placeholder="Type your answer here..."
         ></textarea>
         <AppButton type="submit" v-if="!isDisabled">Send</AppButton>

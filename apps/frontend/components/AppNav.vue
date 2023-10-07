@@ -2,29 +2,26 @@
 const token = useLocalStorage<string | null>("token", null);
 
 const { setToken, isLoggedIn } = useAuth();
-const {
-  data: my,
-  execute,
-  error: profileError,
-} = await useFetch<{
-  id: number;
-  name: string;
-  email: string;
-  role: "candidate" | "employer";
-}>("/api/user/me/", {
-  key: "profile",
-  method: "get",
-  baseURL: useRuntimeConfig().public.apiBaseUrl,
-  headers: {
-    Authorization: `Bearer ${token.value}`,
-  },
-  immediate: false,
-  onResponseError: (e) => {
-    if (e.response.status === 401) {
-      setToken(null);
-    }
-  },
-});
+const fetchData = async () =>
+  await useFetch<{
+    id: number;
+    name: string;
+    email: string;
+    role: "candidate" | "employer";
+  }>("/api/user/me/", {
+    key: "profile",
+    method: "get",
+    baseURL: useRuntimeConfig().public.apiBaseUrl,
+    headers: {
+      Authorization: `Bearer ${token.value}`,
+    },
+    immediate: false,
+    onResponseError: (e) => {
+      if (e.response.status === 401) {
+        setToken(null);
+      }
+    },
+  });
 
 onMounted(async () => {
   if (isLoggedIn.value) {
@@ -32,9 +29,11 @@ onMounted(async () => {
   }
 });
 
+const { data: my, execute, error: profileError } = await fetchData();
+
 watch(isLoggedIn, (value) => {
   if (value) {
-    execute();
+    fetchData();
   }
 });
 </script>
@@ -57,7 +56,9 @@ watch(isLoggedIn, (value) => {
               <AppButton :to="{ name: 'sign-up' }">Sign Up</AppButton>
             </div>
             <div v-else class="flex gap-2">
-              <AppButton v-if="my?.role == 'employer'">Reports</AppButton>
+              <AppButton v-if="my?.role == 'employer'" :to="{ name: 'Reports' }"
+                >Reports</AppButton
+              >
               <AppButton flat @click="setToken(null)"> Logout </AppButton>
             </div>
           </client-only>

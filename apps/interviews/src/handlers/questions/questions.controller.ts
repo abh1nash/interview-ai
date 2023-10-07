@@ -123,6 +123,11 @@ export class QuestionsController {
     const token = request.get("Authorization")?.split(" ")[1] as string;
     const decodedToken = await JwtService.verify(token);
 
+    if (!decodedToken) {
+      response.sendStatus(401);
+      return;
+    }
+
     const candidateId = parseInt(decodedToken.sub);
     const interviewId = parseInt(request.params.interviewId);
 
