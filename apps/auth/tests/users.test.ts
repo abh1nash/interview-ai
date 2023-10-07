@@ -89,6 +89,34 @@ describe("Users", () => {
     expect(response.body).toHaveProperty("role", user.role);
   });
 
+  it("should return a single user", async () => {
+    const user = {
+      id: faker.number.int(),
+      name: faker.person.fullName(),
+      email: faker.internet.email(),
+      role: "candidate" as Role,
+      createdAt: faker.date.recent(),
+      updatedAt: faker.date.recent(),
+      passwordHash: "hashedPasswordMock",
+    };
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(user);
+
+    const response = await factory.app.get(`/user/${user.id}`);
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("name", user.name);
+    expect(response.body).toHaveProperty("email", user.email);
+    expect(response.body).toHaveProperty("id", user.id);
+    expect(response.body).toHaveProperty("role", user.role);
+  });
+
+  it("should return 404 if user does not exist", async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null);
+
+    const response = await factory.app.get(`/user/${faker.number.int()}`);
+    expect(response.status).toBe(404);
+  });
+
   it("should return 401 if token is not provided", async () => {
     const response = await factory.app.get("/me");
     expect(response.status).toBe(401);

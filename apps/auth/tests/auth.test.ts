@@ -31,7 +31,7 @@ describe("Auth", () => {
       createdAt: faker.date.recent(),
       updatedAt: faker.date.recent(),
       role: "candidate",
-      id: faker.number.bigInt(),
+      id: faker.number.int(),
     });
     // Mock JwtService.generate to return a token
     const originalGenerate = JwtService.generate;
@@ -56,7 +56,7 @@ describe("Auth", () => {
       createdAt: faker.date.recent(),
       updatedAt: faker.date.recent(),
       role: "candidate",
-      id: faker.number.bigInt(),
+      id: faker.number.int(),
     });
     const originalGenerate = JwtService.generate;
     JwtService.generate = jest.fn().mockResolvedValue("fake-token");
@@ -76,7 +76,7 @@ describe("Auth", () => {
       createdAt: faker.date.recent(),
       updatedAt: faker.date.recent(),
       role: "candidate",
-      id: faker.number.bigInt(),
+      id: faker.number.int(),
     });
     const response = await factory.app.post("/auth/login").send({
       email: "existing@example.com",

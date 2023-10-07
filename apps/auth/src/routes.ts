@@ -24,6 +24,12 @@ export const routes: Route[] = [
     action: "create",
   },
   {
+    path: "/user/:id",
+    method: RouteMethod.GET,
+    controller: UsersController,
+    action: "get",
+  },
+  {
     path: "/auth/login",
     method: RouteMethod.POST,
     controller: AuthController,

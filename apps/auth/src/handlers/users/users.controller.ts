@@ -44,6 +44,29 @@ export default class UsersController {
     }
   }
 
+  async get(request: Request, response: Response, next: NextFunction) {
+    const id = parseInt(request.params.id);
+    if (!id) {
+      response
+        .status(400)
+        .json(new UserErrorResponseDTO("Missing required fields."));
+      return;
+    }
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      response
+        .status(404)
+        .json(new UserErrorResponseDTO("User does not exist."));
+      return;
+    }
+    response.status(200).json({
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      id: parseInt(user.id.toString()),
+    });
+  }
+
   async me(request: Request, response: Response, next: NextFunction) {
     const token = request.get("Authorization")?.split(" ")[1];
     if (!token) {
