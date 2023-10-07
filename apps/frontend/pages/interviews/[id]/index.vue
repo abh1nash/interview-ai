@@ -77,7 +77,7 @@ const isDisabled = computed(() => {
 });
 </script>
 <template>
-  <div>
+  <div :aria-busy="pending">
     <AppButton type="button" @click="router.go(-1)" flat-primary>
       Back
     </AppButton>
@@ -87,7 +87,10 @@ const isDisabled = computed(() => {
           <div class="sr-only" role="alert">Loading...</div>
         </span>
       </div>
-      <div class="text-2xl font-light leading-[1.5em] my-4 text-gray-600">
+      <div
+        aria-live="polite"
+        class="text-2xl font-light leading-[1.5em] my-4 text-gray-600"
+      >
         {{ question }}
       </div>
       <form v-if="data?.id !== -1" @submit.prevent="onAnswer">

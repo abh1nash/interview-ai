@@ -37,35 +37,61 @@ const { data, error: reportsError } = await useFetch<{
     Authorization: `Bearer ${token.value}`,
   },
   baseURL: useRuntimeConfig().public.apiBaseUrl,
-  lazy: true,
-  server: false,
+});
+
+const { data: candidateData, error: candidateError } = await useFetch<{
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}>("/api/user/user/" + data?.value?.candidateId, {
+  method: "get",
+  baseURL: useRuntimeConfig().public.apiBaseUrl,
 });
 </script>
 <template>
   <div>
     <div>
-      <h1 class="font-bold text-xl">
-        Report for Candidate {{ data?.candidateId }}
-      </h1>
+      <h1 class="font-bold text-xl">Report for {{ candidateData?.name }}</h1>
     </div>
     <div class="card my-2 bg-base-100">
       <div class="card-body">
         <div class="flex pb-4 border-b">
-          <div class="w-8/12">
-            <div class="font-bold">Summary</div>
-            <div class="text-sm">
-              {{ data?.summary }}
+          <div class="w-8/12 grid gap-4">
+            <div>
+              <div class="font-bold">Name</div>
+              <div class="text-sm">
+                {{ candidateData?.name }}
+              </div>
             </div>
-            <div class="mt-4">
-              <AppButton
-                flat-primary
-                size="sm"
-                :to="{ name: 'job', params: { id: jobData?.id } }"
-                >View Job Description</AppButton
-              >
+            <div>
+              <div class="font-bold">Email</div>
+              <div class="text-sm">
+                {{ candidateData?.email }}
+              </div>
+            </div>
+            <div>
+              <div class="font-bold">Job Title</div>
+              <div class="text-sm">
+                {{ jobData?.title }}
+              </div>
+              <div class="mt-2">
+                <AppButton
+                  flat-primary
+                  size="sm"
+                  :to="{ name: 'job', params: { id: jobData?.id } }"
+                  >View Job Description</AppButton
+                >
+              </div>
+            </div>
+            <div>
+              <div class="font-bold">Summary</div>
+              <div class="text-sm">
+                {{ data?.summary }}
+              </div>
             </div>
           </div>
-          <div class="text-center w-4/12 self-center">
+          <div class="text-center w-4/12">
             <div
               :class="[
                 'w-20 h-20',
