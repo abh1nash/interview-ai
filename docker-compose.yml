@@ -1,14 +1,18 @@
 version: '3.8'
 services:
   rabbitmq:
-      image: rabbitmq:3-management-alpine
-      container_name: 'rabbitmq'
-      ports:
-          - 5672:5672
-          - 15672:15672
+    networks:
+      - default
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
   gateway:
     image: nginx:alpine
     container_name: gateway
+    networks:
+      - default
     depends_on:
       - auth-app
       - interviews-app
@@ -21,6 +25,8 @@ services:
       - "443:443"
 
   auth-db:
+    networks:
+      - default
     container_name: auth-db
     image: postgres:alpine
     environment:
@@ -31,6 +37,8 @@ services:
       - authdb:/var/lib/postgresql/data
 
   interviews-db:
+    networks:
+      - default
     container_name: interviews-db
     image: postgres:alpine
     environment:
@@ -41,6 +49,8 @@ services:
       - interviewsdb:/var/lib/postgresql/data
 
   reports-db:
+    networks:
+      - default
     container_name: reports-db
     image: postgres:alpine
     environment:
@@ -51,11 +61,15 @@ services:
       - reportsdb:/var/lib/postgresql/data
   
   token-service:
+    networks:
+      - default
     build: ./components/token-service
     environment:
       - JWT_SECRET=this-is-a-very-secret-key-okay-asdjhjasjdhajkshdkjashdkj
 
   auth-app:
+    networks:
+      - default
     build: ./apps/auth
     depends_on:
       - auth-db
@@ -67,6 +81,8 @@ services:
       - TOKEN_SERVICE_URL=http://token-service:3000
   
   interviews-app:
+    networks:
+      - default
     build: ./apps/interviews
     depends_on:
       - interviews-db
@@ -80,6 +96,8 @@ services:
       - RABBIT_URL=amqp://rabbitmq:5672
 
   reports-app:
+    networks:
+      - default
     build: ./apps/reports
     depends_on:
       - reports-db
@@ -93,6 +111,8 @@ services:
       - RABBIT_URL=amqp://rabbitmq:5672
   
   frontend: 
+    networks:
+      - default
     build:
       context: ./apps/frontend
       dockerfile: Dockerfile
