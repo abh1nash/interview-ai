@@ -54,7 +54,10 @@ export async function listenForReports() {
             jobId: data.jobId,
             candidateId: data.candidateId,
             summary: reportData.summary,
-            suitabilityScore: reportData.suitabilityScore,
+            suitabilityScore:
+              typeof reportData.suitabilityScore == "string"
+                ? parseInt(reportData.suitabilityScore)
+                : reportData.suitabilityScore,
             sentimentSummary: reportData.sentimentSummary,
             knowledgeSummary: reportData.knowledgeSummary,
           },
