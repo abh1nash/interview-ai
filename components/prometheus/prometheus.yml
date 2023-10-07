@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "auth-app"
+    static_configs:
+      - targets: ["auth-app:3000"]
+
+  - job_name: "interviews-app"
+    static_configs:
+      - targets: ["interviews-app:3000"]
+
+  - job_name: "reports-app"
+    static_configs:
+      - targets: ["reports-app:3000"]
+
+  - job_name: "token-service"
+    static_configs:
+      - targets: ["token-service:3000"]
