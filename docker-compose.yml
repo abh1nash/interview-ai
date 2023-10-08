@@ -2,9 +2,6 @@ version: '3.8'
 
 x-common-postgres: &common-postgres
   image: postgres:alpine
-  environment:
-    POSTGRES_USER: ${POSTGRES_USER}
-    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   networks:
     - app-network
 
@@ -37,18 +34,24 @@ services:
     <<: *common-postgres
     container_name: auth-db
     environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: auth
 
   interviews-db:
     <<: *common-postgres
     container_name: interviews-db
     environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: interviews
 
   reports-db:
     <<: *common-postgres
     container_name: reports-db
     environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: reports
 
   auth-app:
@@ -57,7 +60,7 @@ services:
     depends_on:
       - auth-db
     environment:
-      DATABASE_URL: postgres://postgres:postgres@auth-db/auth
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@auth-db/auth
 
   interviews-app:
     <<: *common-app
@@ -66,7 +69,7 @@ services:
       - interviews-db
       - rabbitmq
     environment:
-      DATABASE_URL: postgres://postgres:postgres@interviews-db/interviews
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@interviews-db/interviews
       RABBIT_URL: amqp://rabbitmq:5672
 
   reports-app:
@@ -76,7 +79,7 @@ services:
       - reports-db
       - rabbitmq
     environment:
-      DATABASE_URL: postgres://postgres:postgres@reports-db/reports
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@reports-db/reports
       RABBIT_URL: amqp://rabbitmq:5672
   
   frontend: 
