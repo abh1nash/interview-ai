@@ -39,9 +39,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y sshpass
-          sshpass -p "$VPS_PASSWORD" scp -o StrictHostKeyChecking=no docker-compose.yml $VPS_USER@$VPS_IP:/interview-ai
           sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
             cd /interview-ai
+            git pull
             docker-compose pull
-            docker-compose up -d
+            make prod
           "
