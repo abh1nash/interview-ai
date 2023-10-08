@@ -14,8 +14,8 @@ prepare:
 		(cd $(COMPONENTS_DIR)/$(COMPONENTS_DIT)/$$component && npm install); \
 	done
 
-	echo "Preparing integration test"
-	cd tests-integration && npm install
+	@echo "Preparing integration test"
+	@cd tests-integration && npm install && npx playwright install
 
 unit-test:
 	@for app in $(APPS); do \
