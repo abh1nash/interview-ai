@@ -43,5 +43,6 @@ jobs:
             cd /interview-ai
             git pull
             docker-compose pull
+            make prepare
             make prod
           "
