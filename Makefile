@@ -31,7 +31,7 @@ dev:
 	@docker compose --env-file .env -f docker-compose.base.yml -f docker-compose.dev.yml up --build
 
 test:
-	@docker compose -p interview-ai-test --env-file .env.test -f docker-compose.base.yml -f docker-compose.test.yml up --build -d
+	@docker compose -p interview-ai-test --env-file .env.test -f docker-compose.base.yml -f docker-compose.test.yml up --build -d --wait
 
 teardown-test:
 	@docker compose -p interview-ai-test down -v --remove-orphans
