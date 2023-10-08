@@ -2,38 +2,51 @@
 const token = useLocalStorage<string | null>("token", null);
 
 const { setToken, isLoggedIn } = useAuth();
-const fetchData = async () =>
-  await useFetch<{
-    id: number;
-    name: string;
-    email: string;
-    role: "candidate" | "employer";
-  }>("/api/user/me/", {
-    key: "profile",
-    method: "get",
-    baseURL: useRuntimeConfig().public.apiBaseUrl,
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-    },
-    immediate: false,
-    onResponseError: (e) => {
-      if (e.response.status === 401) {
-        setToken(null);
-      }
-    },
-  });
 
-onMounted(async () => {
-  if (isLoggedIn.value) {
-    refreshNuxtData("profile");
-  }
+const {
+  data: my,
+  execute,
+  error: profileError,
+} = await useFetch<{
+  id: number;
+  name: string;
+  email: string;
+  role: "candidate" | "employer";
+}>("/api/user/me/", {
+  key: "profile",
+  method: "get",
+  baseURL: useRuntimeConfig().public.apiBaseUrl,
+  headers: {
+    Authorization: `Bearer ${token.value}`,
+  },
+  immediate: false,
+  onResponseError: (e) => {
+    if (e.response.status === 401) {
+      setToken(null);
+    }
+  },
 });
-
-const { data: my, execute, error: profileError } = await fetchData();
 
 watch(isLoggedIn, (value) => {
   if (value) {
-    fetchData();
+    useFetch<{
+      id: number;
+      name: string;
+      email: string;
+      role: "candidate" | "employer";
+    }>("/api/user/me/", {
+      key: "profile",
+      method: "get",
+      baseURL: useRuntimeConfig().public.apiBaseUrl,
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+      },
+      onResponseError: (e) => {
+        if (e.response.status === 401) {
+          setToken(null);
+        }
+      },
+    });
   }
 });
 </script>
