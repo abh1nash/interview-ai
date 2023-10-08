@@ -1,0 +1,101 @@
+version: '3.8'
+
+x-common-postgres: &common-postgres
+  image: postgres:alpine
+  networks:
+    - app-network
+
+x-common-app: &common-app
+  depends_on:
+    - token-service
+  networks:
+    - app-network
+  environment:
+    TOKEN_SERVICE_URL: http://token-service:3000
+
+name: interview-ai-test
+
+services:
+  gateway:
+    image: nginx:alpine
+    container_name: gateway
+    networks:
+      - app-network
+    depends_on:
+      - auth-app
+      - interviews-app
+      - reports-app
+      - frontend
+    volumes:
+      - ./components/nginx/conf.d/:/etc/nginx/conf.d/
+    ports:
+      - "80:80"
+      - "443:443"
+
+  auth-db:
+    <<: *common-postgres
+    container_name: auth-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: auth_test
+
+  interviews-db:
+    <<: *common-postgres
+    container_name: interviews-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: interviews_test
+
+  reports-db:
+    <<: *common-postgres
+    container_name: reports-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: reports_test
+
+  auth-app:
+    <<: *common-app
+    build: ./apps/auth
+    depends_on:
+      - auth-db
+    environment:
+      TOKEN_SERVICE_URL: http://token-service:3000
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@auth-db/auth_test
+
+  interviews-app:
+    <<: *common-app
+    build: ./apps/interviews
+    depends_on:
+      - interviews-db
+      - rabbitmq
+    environment:
+      TOKEN_SERVICE_URL: http://token-service:3000
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@interviews-db/interviews_test
+      RABBIT_URL: amqp://rabbitmq:5672
+
+  reports-app:
+    <<: *common-app
+    build: ./apps/reports
+    depends_on:
+      - reports-db
+      - rabbitmq
+    environment:
+      TOKEN_SERVICE_URL: http://token-service:3000
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@reports-db/reports_test
+      RABBIT_URL: amqp://rabbitmq:5672
+  
+  frontend: 
+    networks:
+      - app-network
+    build:
+      context: ./apps/frontend
+      dockerfile: Dockerfile
+    environment:
+      API_BASE_URL: ${API_BASE_URL}
+
+
+networks:
+  app-network:
