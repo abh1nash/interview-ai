@@ -42,7 +42,7 @@ jobs:
           sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no $VPS_USER@$VPS_IP "
             cd /interview-ai
             git pull
-            docker-compose pull
+            docker compose pull
             make prepare
             make prod
           "
