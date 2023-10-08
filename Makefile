@@ -37,8 +37,10 @@ teardown-test:
 	@docker compose -p interview-ai-test down -v --remove-orphans
 
 integration-test:
-	@echo "Running integration tests..."
+	@echo "Starting test environment..."
 	@make test
+	@sleep 5
+	@echo "Environment loaded. Running tests..."
 	@cd tests-integration && npm run test
 	@make teardown-test
 
