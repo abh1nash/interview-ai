@@ -32,6 +32,26 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./components/prometheus/:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./components/grafana:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
 
   auth-db:
     <<: *common-postgres
