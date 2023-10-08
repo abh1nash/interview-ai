@@ -80,6 +80,7 @@ services:
     depends_on:
       - auth-db
     environment:
+      TOKEN_SERVICE_URL: http://token-service:3000
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@auth-db/auth
 
   interviews-app:
@@ -89,6 +90,7 @@ services:
       - interviews-db
       - rabbitmq
     environment:
+      TOKEN_SERVICE_URL: http://token-service:3000
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@interviews-db/interviews
       RABBIT_URL: amqp://rabbitmq:5672
 
@@ -99,6 +101,7 @@ services:
       - reports-db
       - rabbitmq
     environment:
+      TOKEN_SERVICE_URL: http://token-service:3000
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@reports-db/reports
       RABBIT_URL: amqp://rabbitmq:5672
   
