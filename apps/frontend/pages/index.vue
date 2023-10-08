@@ -8,7 +8,6 @@ const { data, error } = await useFetch<
 >("/api/jobs/jobs/list", {
   method: "get",
   baseURL: useRuntimeConfig().public.apiBaseUrl,
-  lazy: true,
 });
 
 const { data: myData } = useNuxtData<{
